@@ -11,12 +11,10 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import api from "@/services/api.service";
 import { addToast } from "@heroui/toast";
-
-interface User {
-  isAuthenticated: boolean;
-}
+import { ApiResponse, LoginResponse, User } from "@/types";
 
 interface AuthContextType {
+  isAuthenticated?: boolean;
   user: User | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
@@ -27,6 +25,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -35,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = Cookies.get("accessToken");
     if (token) {
-      setUser({ isAuthenticated: true });
+      setIsAuthenticated(true);
     }
     setInitialLoading(false);
   }, []);
@@ -44,13 +43,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
 
     try {
-      const { data } = await api.post("/auth/login", { email, password });
-      const { accessToken, refreshToken } = data.data;
+      const { data: response } = await api.post<ApiResponse<LoginResponse>>(
+        "/auth/login",
+        { email, password },
+      );
+      const { accessToken, refreshToken } = response.data;
 
       Cookies.set("accessToken", accessToken);
       Cookies.set("refreshToken", refreshToken);
+      Cookies.set("user", JSON.stringify(response.data.user));
 
-      setUser({ isAuthenticated: true });
+      setUser(response.data.user);
+      setIsAuthenticated(true);
       router.push("/");
 
       addToast({
@@ -87,7 +91,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, initialLoading }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, login, logout, loading, initialLoading }}
+    >
       {!initialLoading && children}
     </AuthContext.Provider>
   );

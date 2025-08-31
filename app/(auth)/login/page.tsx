@@ -1,18 +1,22 @@
 "use client";
 
 import { title } from "@/components/primitives";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/context/auth.context";
 import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
 import { Image } from "@heroui/image";
 import { Input } from "@heroui/input";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginFormValues, LoginSchema } from "@/types";
 
 export default function AboutPage() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<LoginFormValues>({
+    resolver: zodResolver(LoginSchema),
+  });
   const { login, loading } = useAuth();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: LoginFormValues) => {
     await login(data.email, data.password);
   };
 
