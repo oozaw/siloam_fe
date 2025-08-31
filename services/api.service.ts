@@ -21,7 +21,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+    if (error.response?.status === 401 && currentPath !== "/login") {
       console.warn("Unauthorized! Redirecting to login...");
 
       Cookies.remove("accessToken");
