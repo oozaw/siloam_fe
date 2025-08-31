@@ -8,8 +8,8 @@ interface DetailProductPageProps {
   params: { id: string };
 }
 
-export default function DetailProductPage({ params }: DetailProductPageProps) {
-  const { id } = useParams() as { id: string | null };
+export default function DetailProductPage() {
+  const { id } = useParams<DetailProductPageProps["params"]>();
   if (!id) return <div>Invalid Product ID</div>;
 
   const {product, loading, error, refetch} = useProduct(id);
