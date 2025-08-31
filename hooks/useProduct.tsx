@@ -3,7 +3,7 @@
 import { formatSearchParams } from "@/app/lib/helpers";
 import api from "@/services/api.service";
 import { ApiResponse, BaseQueryParams, PaginationMeta, Product } from "@/types";
-import { use, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useProducts(initialParams: Partial<BaseQueryParams> = {}) {
   const [params, setParams] = useState<BaseQueryParams>(initialParams);
@@ -19,9 +19,9 @@ export function useProducts(initialParams: Partial<BaseQueryParams> = {}) {
 
       try {
         const formattedParams = formatSearchParams(queryParams || params);
-        const { data: response } = await api.get<
-          ApiResponse<Product[]>
-        >(`/products?${formattedParams}`);
+        const { data: response } = await api.get<ApiResponse<Product[]>>(
+          `/products?${formattedParams}`,
+        );
 
         setProducts(response.data);
         setPagination(response.meta || null);
@@ -75,10 +75,10 @@ export const useProduct = (id: number | string | null) => {
     setError(null);
 
     try {
-      const { data: response } = await api.get<ApiResponse<{ data: Product }>>(
+      const { data: response } = await api.get<ApiResponse<Product>>(
         `/products/${productId}`,
       );
-      setProduct(response.data.data);
+      setProduct(response.data);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An unknown error occurred",

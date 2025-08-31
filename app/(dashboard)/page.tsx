@@ -38,6 +38,7 @@ import { Form } from "@heroui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addToast } from "@heroui/toast";
+import { Link } from "@heroui/link";
 
 export const columns = [
   { name: "NAME", uid: "name" },
@@ -291,9 +292,9 @@ export default function Home() {
           return (
             <div className="relative flex items-center justify-center gap-3">
               <Tooltip content="Details">
-                <span className="text-lg cursor-pointer text-default-400 active:opacity-50">
+                <Link className="text-lg cursor-pointer text-default-400 active:opacity-50" href={`products/${product.id}`}>
                   <EyeIcon />
-                </span>
+                </Link>
               </Tooltip>
               <Tooltip content="Edit user">
                 <span className="text-lg cursor-pointer text-primary active:opacity-50">
