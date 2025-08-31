@@ -158,6 +158,10 @@ export default function Home() {
     }
   };
 
+  const handleSearch = debounce((value: string) => {
+    setParams({ ...params, search: value, page: 1 });
+  }, 500);
+
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <div className="justify-center inline-block w-full text-start">
@@ -180,9 +184,7 @@ export default function Home() {
           variant="bordered"
           onValueChange={(value: string) => {
             setSearchValue(value);
-            debounce(() => {
-              setParams({ ...params, search: value, page: 1 });
-            })();
+            handleSearch(value);
           }}
         />
 
